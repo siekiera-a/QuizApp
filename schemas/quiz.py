@@ -39,7 +39,8 @@ quiz_schema = {
                 },
                 'required': ['question', 'answers']
             },
-            'minItems': 1
+            'minItems': 1,
+            'uniqueItems': True
         }
     },
     'required': ['author', 'description', 'data']

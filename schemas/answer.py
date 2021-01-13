@@ -1,30 +1,44 @@
 # Example
 #
-# [
-#     {
-#         question: int,  # question id
-#         answers: int[]  # answers ids
-#     }
-# ]
+# {
+#     user: string,
+#     data: [
+#         {
+#             question: int,  # question id
+#             answers: int[]  # answers ids
+#         }
+#     ]
+# }
 
 answer_schema = {
-    'type': 'array',
-    'items': {
-        'type': 'object',
-        'properties': {
-            'question': {
-                'type': 'integer'
-            },
-            'answers': {
-                'type': 'array',
-                'items': {
-                    'type': 'integer'
-                },
-                'minItems': 1,
-                'uniqueItems': True
-            }
+    'type': 'object',
+    'properties': {
+        'user': {
+            'type': 'string',
+            'minLength': 1
         },
-        'required': ['question', 'answers']
+        'data': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'question': {
+                        'type': 'integer'
+                    },
+                    'answers': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'integer'
+                        },
+                        'minItems': 1,
+                        'uniqueItems': True
+                    }
+                },
+                'required': ['question', 'answers']
+            },
+            'minItems': 1,
+            'uniqueItems': True
+        }
     },
-    'minItems': 1
+    'required': ['user', 'data']
 }
