@@ -1,4 +1,4 @@
-from flask import Blueprint, g, jsonify, Response, request
+from flask import Blueprint, g, jsonify, request
 from flask_expects_json import expects_json
 
 from models.quiz import Quiz
@@ -7,34 +7,10 @@ from models.answer import Answer
 from models.score import Score
 from schemas.quiz import quiz_schema
 from schemas.answer import answer_schema
-
 from app import db
+from utils import response_message, int_or_else_get, parse_id, get_random_string, contains_correct_answer
 
 controller = Blueprint('controller', __name__)
-
-
-def parse_id(x):
-    try:
-        x = int(x)
-        if x <= 0:
-            return None
-    except ValueError:
-        return None
-
-    return x
-
-
-def int_or_else_get(x, other):
-    try:
-        x = int(x)
-        return x
-    except ValueError:
-        return other
-
-
-def response_message(message, status):
-    message = jsonify(message)
-    return Response(message.get_data(as_text=True), status=status, mimetype='application/json')
 
 
 @controller.route('/quiz')
@@ -45,7 +21,33 @@ def get_quizzes():
 @controller.route('/quiz', methods=['POST'])
 @expects_json(quiz_schema)
 def create_quiz():
-    pass
+    data = g.data
+
+    # check if exists question with no correct answer
+    for d in data['data']:
+        if not contains_correct_answer(d['answers']):
+            return response_message({'message': f'Question: "{d["question"]}" does not contain correct answer!'}, 400)
+
+    questions = list(map(
+        lambda e: Question(text=e['question'],
+                           answers=[Answer(text=a['text'], correct=a['correct']) for a in e['answers']]),
+        data['data']))
+
+    quiz = Quiz(code=get_random_string(8), author=data['author'], description=data['description'], questions=questions)
+
+    inserted = False
+
+    while not inserted:
+        try:
+            db.session.add(quiz)
+            db.session.commit()
+            inserted = True
+        except:
+            # db can throw exception if code is not unique
+            db.session.rollback()
+            quiz.code = get_random_string(8)
+
+    return response_message({'code': quiz.code}, 201)
 
 
 @controller.route('/quiz/<code>')
