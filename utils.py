@@ -31,5 +31,6 @@ def get_random_string(length):
     pool = ascii_letters + digits
     return ''.join(choice(pool) for i in range(length))
 
+
 def contains_correct_answer(answers):
     return any(filter(lambda a: a['correct'], answers))

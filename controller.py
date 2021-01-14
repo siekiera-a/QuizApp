@@ -15,7 +15,27 @@ controller = Blueprint('controller', __name__)
 
 @controller.route('/quiz')
 def get_quizzes():
-    pass
+    page = request.args.get('page')
+
+    if page is None:
+        page = 1
+    else:
+        page = int_or_else_get(page, 1)
+
+    pagination = Quiz.query.paginate(page=page, per_page=10, error_out=False)
+
+    if len(pagination.items) == 0:
+        return response_message({'message': 'No quizzes found!'}, 404)
+
+    response = list(map(lambda i: {
+        'id': i.id,
+        'code': i.code,
+        'author': i.author,
+        'creationTime': i.creation_time,
+        'description': i.description
+    }, pagination.items))
+
+    return jsonify(response)
 
 
 @controller.route('/quiz', methods=['POST'])
