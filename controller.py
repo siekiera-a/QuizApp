@@ -46,9 +46,26 @@ def create_quiz():
     pass
 
 
-@controller.route('/quiz/<quiz_id>/<question_id>')
-def get_question(quiz_id, question_id):
-    pass
+@controller.route('/quiz/question/<question_id>')
+def get_question(question_id):
+    question_id = parse_id(question_id)
+
+    if question_id is None:
+        return response_message({'message': 'Invalid question id!'}, 400)
+
+    question = Question.query.filter(id=question_id).first()
+
+    if question is None:
+        return response_message({'message': f'Question with id {question_id} not found!'}, 404)
+
+    answers = [{'id': a.id, 'text': a.text} for a in question.answers]
+
+    response_data = {
+        'id': question.id,
+        'text': question.text,
+        'answers': answers
+    }
+    return jsonify(response_data)
 
 
 @controller.route('/submit/<quiz_id>', methods=['POST'])
