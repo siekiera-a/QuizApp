@@ -20,7 +20,8 @@ def get_quizzes():
     if page is None:
         page = 1
     else:
-        page = int_or_else_get(page, 1)
+        # page must be greater or equal 1
+        page = max(int_or_else_get(page, 1), 1)
 
     pagination = Quiz.query.paginate(page=page, per_page=10, error_out=False)
 
