@@ -1,10 +1,10 @@
-# pip instal flask_script
+# pip install flask_script
 # pip install flask_migrate
 # pip install psycopg2
 #
 # python manage.py db init
-# python manage.py db migrate
 # add imports with models
+# python manage.py db migrate
 # python manage.py db upgrade
 
 

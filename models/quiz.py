@@ -9,4 +9,4 @@ class Quiz(db.Model):
     description = db.Column(db.String, nullable=False)
     creation_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     questions = db.relationship('Question', backref='quiz', lazy=True)
-    results = db.relationship('Score', backref='quiz', lazy=True)
+    scores = db.relationship('Score', backref='quiz', lazy=True)
