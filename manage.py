@@ -21,7 +21,6 @@ manager.add_command('db', MigrateCommand)
 db.init_app(app)
 migrate.init_app(app, db)
 
-db.session
 
 if __name__ == '__main__':
     manager.run()
