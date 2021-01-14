@@ -5,7 +5,10 @@
 #     description: string,
 #     data: {
 #         question: string,
-#         answers: string[]
+#         answers: {
+#           text: string,
+#           correct: boolean
+#         }[]
 #     }[]
 # }
 
@@ -30,9 +33,19 @@ quiz_schema = {
                     },
                     'answers': {
                         'type': 'array',
-                        'minItems': 1,
+                        'minItems': 2,
                         'items': {
-                            'type': 'string'
+                            'type': 'object',
+                            'properties': {
+                                'text': {
+                                    'type': 'string',
+                                    'minLength': 1
+                                },
+                                'correct': {
+                                    'type': 'boolean'
+                                }
+                            },
+                            'required': ['text', 'correct']
                         },
                         'uniqueItems': True
                     }
