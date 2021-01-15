@@ -193,7 +193,7 @@ def get_leaderboard(quiz_id):
         'author': quiz.author,
         'code': quiz.code,
         'description': quiz.description,
-        'created': quiz.creation_time,
+        'creationTime': quiz.creation_time,
         'scores': scores
     }
 
