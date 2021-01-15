@@ -9,9 +9,10 @@ import {
   IconButton,
 } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { NightsStay, WbSunny } from '@material-ui/icons';
 import './app.css';
+import Welcome from './components/Welcome';
 
 const App = () => {
   const [theme, setTheme] = useState(() => {
@@ -46,7 +47,7 @@ const App = () => {
     <ThemeProvider theme={appTheme}>
       <CssBaseline>
         <Container>
-          <div className='theme-icon'>
+          <div className="theme-icon">
             <IconButton onClick={toggleTheme}>
               {theme === darkTheme ? (
                 <WbSunny style={{ fill: 'yellow' }} />
@@ -56,7 +57,11 @@ const App = () => {
             </IconButton>
           </div>
           <BrowserRouter>
-            <Switch></Switch>
+            <Switch>
+              <Route path="/">
+                <Welcome />
+              </Route>
+            </Switch>
           </BrowserRouter>
         </Container>
       </CssBaseline>
