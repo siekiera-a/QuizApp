@@ -1,9 +1,67 @@
-const app = () => {
-  return (
-    <div className="App">
-      <h1>hello world!</h1>
-    </div>
-  );
-}
+import React, { useState } from 'react';
+import { darkTheme, lightTheme } from './theme';
+import { ThemeOptions } from '@material-ui/core/styles';
 
-export default app;
+import {
+  createMuiTheme,
+  CssBaseline,
+  Container,
+  IconButton,
+} from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
+import { BrowserRouter, Switch } from 'react-router-dom';
+import { NightsStay, WbSunny } from '@material-ui/icons';
+import './app.css';
+
+const App = () => {
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme != null) {
+      return savedTheme === 'dark' ? darkTheme : lightTheme;
+    }
+
+    return darkTheme;
+  });
+
+  const toggleTheme = () => {
+    let newTheme: ThemeOptions;
+    let newThemeString: string;
+
+    if (theme === darkTheme) {
+      newTheme = lightTheme;
+      newThemeString = 'light';
+    } else {
+      newTheme = darkTheme;
+      newThemeString = 'dark';
+    }
+
+    setTheme(newTheme);
+    localStorage.setItem('theme', newThemeString);
+  };
+
+  const appTheme = createMuiTheme(theme);
+
+  return (
+    <ThemeProvider theme={appTheme}>
+      <CssBaseline>
+        <Container>
+          <div className='theme-icon'>
+            <IconButton onClick={toggleTheme}>
+              {theme === darkTheme ? (
+                <WbSunny style={{ fill: 'yellow' }} />
+              ) : (
+                <NightsStay style={{ fill: 'black' }} />
+              )}
+            </IconButton>
+          </div>
+          <BrowserRouter>
+            <Switch></Switch>
+          </BrowserRouter>
+        </Container>
+      </CssBaseline>
+    </ThemeProvider>
+  );
+};
+
+export default App;
