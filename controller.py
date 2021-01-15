@@ -28,13 +28,21 @@ def get_quizzes():
     if len(pagination.items) == 0:
         return response_message({'message': 'No quizzes found!'}, 404)
 
-    response = list(map(lambda i: {
+    quizzes = list(map(lambda i: {
         'id': i.id,
         'code': i.code,
         'author': i.author,
         'creationTime': i.creation_time,
         'description': i.description
     }, pagination.items))
+
+    response = {
+        'hasNext': pagination.has_next,
+        'hasPrev': pagination.has_prev,
+        'page': pagination.page,
+        'pages': pagination.pages,
+        'items': quizzes
+    }
 
     return jsonify(response)
 
