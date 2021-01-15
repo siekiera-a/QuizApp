@@ -41,7 +41,8 @@ def get_quizzes():
         'hasPrev': pagination.has_prev,
         'page': pagination.page,
         'pages': pagination.pages,
-        'items': quizzes
+        'items': quizzes,
+        'total': pagination.total
     }
 
     return jsonify(response)
