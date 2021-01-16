@@ -82,12 +82,14 @@ def create_quiz():
 
 @controller.route('/quiz/<code>')
 def get_quiz_by_code(code):
-    quiz_id = Quiz.query.filter_by(code=code).first()
+    quiz = Quiz.query.filter_by(code=code).first()
 
-    if quiz_id is None:
+    if quiz is None:
         return response_message({'message': f'Quiz with code {code} not found!'}, 404)
 
-    return jsonify({'id': quiz_id})
+    questions = [q.id for q in quiz.questions]
+
+    return jsonify({'id': quiz.id, 'questions': questions})
 
 
 @controller.route('/quiz/question/<question_id>')

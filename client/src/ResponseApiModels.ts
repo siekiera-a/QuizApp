@@ -20,8 +20,9 @@ export interface ICode {
   code: string
 }
 
-export interface ICode {
-  id: number
+export interface IQuizQuestions {
+  id: number,
+  questions: number[]
 }
 
 export interface IAnswer {
