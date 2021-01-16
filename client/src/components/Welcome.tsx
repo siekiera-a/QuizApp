@@ -23,9 +23,6 @@ const useStyles = makeStyles({
   center: {
     textAlign: 'center',
   },
-  box: {
-    marginTop: '75px',
-  },
   margin: {
     marginTop: '16px',
   },
@@ -54,8 +51,8 @@ const Welcome = () => {
 
   return (
     <>
-      <Container maxWidth="md" className={classes.box}>
-        <Card className={classes.box}>
+      <Container maxWidth="md" className={'box'}>
+        <Card>
           <Typography
             align="center"
             variant="h4"

@@ -1,4 +1,3 @@
-import { exception } from "console";
 import { IError } from "./ResponseApiModels";
 
 const apiUrl = 'http://localhost:5000/api'

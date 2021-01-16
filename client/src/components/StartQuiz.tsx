@@ -24,7 +24,7 @@ const StartQuiz = () => {
     if (input.current !== null) {
       const code = input.current.value;
       input.current.value = '';
-      history.push(`/play/${code}`);
+      history.push(`/play/${code}/1`);
     }
   };
 
