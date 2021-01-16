@@ -13,8 +13,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
+import { fetchApi } from '../api';
 
-import { apiUrl } from '../api';
 import { IGetQuiz } from '../ResponseApiModels';
 import QuizRow from './QuizRow';
 import StartQuiz from './StartQuiz';
@@ -31,30 +31,25 @@ const useStyles = makeStyles({
   },
 });
 
+const getQuizzes = async (page: number = 1): Promise<IGetQuiz | undefined> => {
+  const url = `/quiz?page=${page}`;
+  try {
+    const data: IGetQuiz = await fetchApi<IGetQuiz>(url);
+    return data;
+  } catch (e) {
+    console.log(e.message);
+    return undefined;
+  }
+};
+
 const Welcome = () => {
   const [page, setPage] = useState(1);
   const [quizzes, setQuizzes] = useState<IGetQuiz>();
 
   const classes = useStyles();
 
-  const getQuizzes = async (page: number = 1) => {
-    const url = `${apiUrl}/quiz?page=${page}`;
-
-    try {
-      const response: Response = await fetch(url);
-
-      if (response.ok) {
-        const responseJson: IGetQuiz = await response.json();
-        setQuizzes(responseJson);
-      }
-    } catch (e) {
-      console.log(e);
-      setQuizzes(undefined);
-    }
-  };
-
   useEffect(() => {
-    getQuizzes(page);
+    getQuizzes(page).then((data) => setQuizzes(data));
   }, [page]);
 
   return (

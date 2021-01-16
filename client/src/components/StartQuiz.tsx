@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: '20px',
+    marginTop: '35px',
   },
   button: {
     marginLeft: '20px',
