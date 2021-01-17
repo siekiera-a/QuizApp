@@ -19,7 +19,7 @@ export interface IAnswerData {
 
 export interface IAnswerRequest {
   user: string,
-  data: IAnswerData
+  data: IAnswerData[]
 }
 
 export { }

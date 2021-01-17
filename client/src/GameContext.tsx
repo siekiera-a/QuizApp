@@ -1,13 +1,16 @@
 import { createContext, useState } from 'react';
-import { fetchApi } from './api';
-import { IQuestion, IQuizQuestions } from './ResponseApiModels';
+import { resolve } from 'url';
+import { fetchApi, fetchPostApi } from './api';
+import { IAnswerData, IAnswerRequest } from './RequestApiModels';
+import {
+  IQuestion,
+  IQuizQuestions,
+  ISubmitResponse,
+} from './ResponseApiModels';
 
 interface IGame {
   quiz: IQuizQuestions;
-  data: {
-    question: number;
-    answers: number[];
-  }[];
+  data: IAnswerData[];
 }
 
 interface IGameContext {
@@ -20,6 +23,8 @@ interface IGameContext {
   answerTheQuestion(id: number, answers: number[]): void;
   hasNextQuestion(): boolean;
   getQuestion(): Promise<IQuestion | undefined>;
+  clearErrors(): void;
+  submitAnswers(user: string): Promise<ISubmitResponse | undefined>;
 }
 
 const defaultValue: IGameContext = {
@@ -32,6 +37,9 @@ const defaultValue: IGameContext = {
   answerTheQuestion: (id: number, answers: number[]) => void 0,
   hasNextQuestion: () => false,
   getQuestion: () => new Promise((resolve, reject) => resolve(undefined)),
+  clearErrors: () => void 0,
+  submitAnswers: (user: string) =>
+    new Promise((resolve, reject) => resolve(undefined)),
 };
 
 export const gameContext = createContext<IGameContext>(defaultValue);
@@ -139,6 +147,31 @@ export function GameContextProvider({ children }: IContextProviderProps) {
     }
   };
 
+  const submitAnswers = async (
+    user: string
+  ): Promise<ISubmitResponse | undefined> => {
+    if (game && user.length > 0) {
+      const url = `/quiz/submit/${game.quiz.id}`;
+      const data: IAnswerRequest = {
+        user,
+        data: game.data,
+      };
+      try {
+        const response = await fetchPostApi<ISubmitResponse>(url, data);
+        return response;
+      } catch (e) {
+        setError(true);
+        setErrorMessage(e.message);
+      }
+    }
+    return undefined;
+  };
+
+  const clearErrors = () => {
+    setError(false);
+    setErrorMessage('');
+  };
+
   return (
     <Provider
       value={{
@@ -151,6 +184,8 @@ export function GameContextProvider({ children }: IContextProviderProps) {
         getQuestion,
         hasNextQuestion,
         answerTheQuestion,
+        clearErrors,
+        submitAnswers,
       }}
     >
       {children}
