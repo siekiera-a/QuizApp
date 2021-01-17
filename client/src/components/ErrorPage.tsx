@@ -3,18 +3,30 @@ import {
   CardContent,
   Container,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { StaticContext } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router-dom';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   margin: {
     marginTop: '16px',
   },
-});
+  link: {
+    color: theme.palette.text.primary,
+  },
+}));
 
-const ErrorPage = ({ location: { state } }: RouteComponentProps) => {
+interface IProp {
+  message: string;
+  link?: string;
+}
+
+const ErrorPage = ({
+  location: { state },
+}: RouteComponentProps<{}, StaticContext, IProp>) => {
   const classes = useStyles();
 
   return (
@@ -29,7 +41,17 @@ const ErrorPage = ({ location: { state } }: RouteComponentProps) => {
           Some error occured!
         </Typography>
         <CardContent>
-          <Typography>{(state as { message: string }).message}</Typography>
+          <Typography>
+            {state.message}{' '}
+            {state.link && (
+              <>
+                Go to{' '}
+                <Link to={state.link} className={classes.link}>
+                  quiz.
+                </Link>
+              </>
+            )}
+          </Typography>
         </CardContent>
       </Card>
     </Container>

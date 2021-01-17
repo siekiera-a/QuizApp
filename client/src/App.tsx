@@ -13,6 +13,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { NightsStay, WbSunny } from '@material-ui/icons';
 import './app.css';
 import Welcome from './components/Welcome';
+import Game from './components/Game';
+import ErrorPage from './components/ErrorPage';
 
 const App = () => {
   const [theme, setTheme] = useState(() => {
@@ -58,9 +60,10 @@ const App = () => {
           </div>
           <BrowserRouter>
             <Switch>
-              <Route path="/">
-                <Welcome />
-              </Route>
+              <Route path="/play/:code/:question" component={Game} />
+
+              <Route path="/error" component={ErrorPage} exact={true} />
+              <Route path="/" component={Welcome} exact={true} />
             </Switch>
           </BrowserRouter>
         </Container>

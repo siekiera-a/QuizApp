@@ -99,7 +99,7 @@ def get_question(question_id):
     if question_id is None:
         return response_message({'message': 'Invalid question id!'}, 400)
 
-    question = Question.query.filter(id=question_id).first()
+    question = Question.query.filter_by(id=question_id).first()
 
     if question is None:
         return response_message({'message': f'Question with id {question_id} not found!'}, 404)
