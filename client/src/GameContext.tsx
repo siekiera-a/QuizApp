@@ -101,7 +101,7 @@ export function GameContextProvider({ children }: IContextProviderProps) {
   };
 
   const getQuestion = async (): Promise<IQuestion | undefined> => {
-    if (hasNextQuestion()) {
+    if (!hasNextQuestion()) {
       return undefined;
     }
 

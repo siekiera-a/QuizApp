@@ -1,12 +1,15 @@
 import {
+  Button,
   Card,
   CardContent,
   Container,
   makeStyles,
+  Snackbar,
   Theme,
   Typography,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect, useState } from 'react';
 import { IQuestion } from '../ResponseApiModels';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,15 +29,20 @@ const useStyles = makeStyles((theme: Theme) => ({
   index: {
     marginRight: '15px',
   },
-  question: {
+  active: {
     backgroundColor: theme.palette.primary.main,
   },
-  active: {
-    backgroundColor: theme.palette.secondary.main,
+  'button-wrapper': {
+    marginTop: '20px',
+    textAlign: 'center',
   },
 }));
 
-const Question = ({ id, text, answers }: IQuestion) => {
+interface IProp {
+  onSubmit(question: number, answers: number[]): void;
+}
+
+const Question = ({ id, text, answers, onSubmit }: IQuestion & IProp) => {
   const classes = useStyles();
 
   const [answersStatus, setAnswersStatus] = useState(() =>
@@ -45,6 +53,18 @@ const Question = ({ id, text, answers }: IQuestion) => {
     }))
   );
 
+  useEffect(() => {
+    setAnswersStatus(
+      answers.map(({ id, text }) => ({
+        id,
+        text,
+        active: false,
+      }))
+    );
+  }, [id, answers]);
+
+  const [open, setOpen] = useState(false);
+
   const toggleStatus = (index: number) => {
     const status = answersStatus[index].active;
     const newArray = [...answersStatus];
@@ -52,9 +72,26 @@ const Question = ({ id, text, answers }: IQuestion) => {
     setAnswersStatus(newArray);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = () => {
+    const selectedAnswers = answersStatus.filter((a) => a.active);
+
+    if (selectedAnswers.length === 0) {
+      setOpen(true);
+    } else {
+      onSubmit(
+        id,
+        selectedAnswers.map((x) => x.id)
+      );
+    }
+  };
+
   return (
     <Container maxWidth="md" className={'box'}>
-      <Card className={classes.question}>
+      <Card>
         <CardContent>
           <Typography variant="h5" align="center">
             {text}
@@ -80,6 +117,23 @@ const Question = ({ id, text, answers }: IQuestion) => {
           </Card>
         ))}
       </div>
+
+      <div className={classes['button-wrapper']}>
+        <Button
+          variant="contained"
+          size="large"
+          color="secondary"
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
+      </div>
+
+      <Snackbar open={open} autoHideDuration={3500} onClose={handleClose}>
+        <Alert severity="info" onClose={handleClose}>
+          At least one answer is correct!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

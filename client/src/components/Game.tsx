@@ -1,43 +1,8 @@
 import { CircularProgress, makeStyles } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
-import { fetchApi } from '../api';
-import { IError, IQuestion, IQuizQuestions } from '../ResponseApiModels';
+import React, { useContext, useEffect, useState } from 'react';
+import { gameContext } from '../GameContext';
+import { IQuestion } from '../ResponseApiModels';
 import Question from './Question';
-
-interface IParams {
-  code: string;
-  question: string;
-}
-
-interface IQuizStorage {
-  quiz: IQuizQuestions;
-  data: {
-    question: number;
-    answers: number[];
-  }[];
-}
-
-const getQuestions = async (code: string): Promise<IQuizQuestions | IError> => {
-  const url = `/quiz/${code}`;
-  try {
-    const response = await fetchApi<IQuizQuestions>(url);
-    return response;
-  } catch (e) {
-    return { message: e.message };
-  }
-};
-
-const getQuestion = async (id: number): Promise<IQuestion | IError> => {
-  const url = `/quiz/question/${id}`;
-
-  try {
-    const response = await fetchApi<IQuestion>(url);
-    return response;
-  } catch (e) {
-    return { message: e.message };
-  }
-};
 
 const useStyles = makeStyles({
   center: {
@@ -45,77 +10,52 @@ const useStyles = makeStyles({
   },
 });
 
-const Game = ({
-  match: {
-    params: { code, question },
-  },
-}: RouteComponentProps<IParams>) => {
-  const history = useHistory();
+const Game = () => {
   const classes = useStyles();
+  const [loading, setLoading] = useState<boolean>();
+  const [question, setQuestion] = useState<IQuestion>();
+  const [nextQuestion, setNextQuestion] = useState<boolean>();
 
-  const [quizLoaded, setQuizLoaded] = useState(false);
-  const [questionData, setQuestionData] = useState<IQuestion>();
+  const { hasNextQuestion, answerTheQuestion, getQuestion } = useContext(
+    gameContext
+  );
 
   useEffect(() => {
-    const questionNumber = +question;
-    const quizString: string | null = sessionStorage.getItem(code);
-
-    // check if given quiz is started
-    if (quizString === null) {
-      // first question - call api
-      if (questionNumber === 1) {
-        getQuestions(code).then((data) => {
-          // error occured
-          if ('message' in data) {
-            history.push({ pathname: '/error', state: data });
-          } else {
-            sessionStorage.setItem(code, JSON.stringify({ quiz: data }));
-            setQuizLoaded(true);
-          }
-        });
-      } else {
-        history.replace({
-          pathname: `/error`,
-          state: { message: 'Start the quiz first!', link: `/play/${code}/1` },
-        });
-        return;
-      }
-    } else {
-      const quizData: IQuizStorage = JSON.parse(quizString as string);
-      const questionsIds: number[] = quizData.quiz.questions;
-
-      if (questionNumber > questionsIds.length) {
-        history.replace({
-          pathname: `/error`,
-          state: { message: 'Invalid question!' },
-        });
-        return;
-      }
-
-      const questionId = questionsIds[questionNumber - 1];
-
-      // get question and answers
-      getQuestion(questionId).then((d) => {
-        if ('message' in d) {
-          // error occured
-          history.push({ pathname: '/error', state: d });
-        } else {
-          setQuestionData(d as IQuestion);
-        }
+    if (hasNextQuestion()) {
+      setLoading(true);
+      getQuestion().then((q) => {
+        setQuestion(q);
+        setLoading(false);
       });
     }
-  }, [code, question, history, quizLoaded]);
+  }, [nextQuestion]);
 
-  return questionData === undefined ? (
+  const handleSubmit = (question: number, answers: number[]) => {
+    answerTheQuestion(question, answers);
+    if (hasNextQuestion()) {
+      setNextQuestion(true);
+    } else {
+      // submit
+    }
+  };
+
+  console.log(loading);
+
+  return loading ? (
     <div className={classes.center + ' box'}>
       <CircularProgress />
     </div>
   ) : (
-    <Question
-      id={questionData.id}
-      answers={questionData.answers}
-      text={questionData.text}
-    />
+    <>
+      {question && (
+        <Question
+          id={question.id}
+          answers={question.answers}
+          text={question.text}
+          onSubmit={handleSubmit}
+        />
+      )}
+    </>
   );
 };
 
