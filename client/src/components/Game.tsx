@@ -53,7 +53,7 @@ const Game = ({
   const history = useHistory();
   const classes = useStyles();
 
-  const [, setQuizLoaded] = useState(false);
+  const [quizLoaded, setQuizLoaded] = useState(false);
   const [questionData, setQuestionData] = useState<IQuestion>();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const Game = ({
 
       const questionId = questionsIds[questionNumber - 1];
 
-      // get question and aswers
+      // get question and answers
       getQuestion(questionId).then((d) => {
         if ('message' in d) {
           // error occured
@@ -104,7 +104,7 @@ const Game = ({
         }
       });
     }
-  }, [code, question, history]);
+  }, [code, question, history, quizLoaded]);
 
   return questionData === undefined ? (
     <div className={classes.center + ' box'}>
