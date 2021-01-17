@@ -6,12 +6,14 @@ import {
   createStyles,
 } from '@material-ui/core';
 import { IQuiz } from '../ResponseApiModels';
-import { Link } from 'react-router-dom';
+import { gameContext } from '../GameContext';
+import { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     link: {
-      color: theme.palette.text.primary,
+      textDecoration: 'underline',
+      cursor: 'pointer',
     },
   })
 );
@@ -26,12 +28,14 @@ const QuizRow = (prop: IQuiz) => {
 
   const classes = useStyles();
 
+  const { startGame } = useContext(gameContext);
+
   return (
     <TableRow>
       <TableCell>
-        <Link to={`/play/${prop.code}/1`} className={classes.link}>
+        <span onClick={() => startGame(prop.code)} className={classes.link}>
           {prop.code}
-        </Link>
+        </span>
       </TableCell>
       <TableCell>{prop.author}</TableCell>
       <TableCell>{format.format(date)}</TableCell>

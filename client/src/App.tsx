@@ -9,12 +9,10 @@ import {
   IconButton,
 } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { NightsStay, WbSunny } from '@material-ui/icons';
 import './app.css';
-import Welcome from './components/Welcome';
-import Game from './components/Game';
-import ErrorPage from './components/ErrorPage';
+import { GameContextProvider } from './GameContext';
+import MenuView from './components/MenuView';
 
 const App = () => {
   const [theme, setTheme] = useState(() => {
@@ -58,14 +56,10 @@ const App = () => {
               )}
             </IconButton>
           </div>
-          <BrowserRouter>
-            <Switch>
-              <Route path="/play/:code/:question" component={Game} />
 
-              <Route path="/error" component={ErrorPage} exact={true} />
-              <Route path="/" component={Welcome} exact={true} />
-            </Switch>
-          </BrowserRouter>
+          <GameContextProvider>
+            <MenuView />
+          </GameContextProvider>
         </Container>
       </CssBaseline>
     </ThemeProvider>
