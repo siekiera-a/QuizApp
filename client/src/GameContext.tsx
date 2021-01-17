@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react';
 import { fetchApi } from './api';
-import { IQuizQuestions } from './ResponseApiModels';
+import { IQuestion, IQuizQuestions } from './ResponseApiModels';
 
 interface IGame {
   quiz: IQuizQuestions;
@@ -17,6 +17,9 @@ interface IGameContext {
   endGame(): void;
   error: boolean;
   errorMessage: string;
+  answerTheQuestion(id: number, answers: number[]): void;
+  hasNextQuestion(): boolean;
+  getQuestion(): Promise<IQuestion | undefined>;
 }
 
 const defaultValue: IGameContext = {
@@ -26,6 +29,9 @@ const defaultValue: IGameContext = {
   endGame: () => void 0,
   error: false,
   errorMessage: '',
+  answerTheQuestion: (id: number, answers: number[]) => void 0,
+  hasNextQuestion: () => false,
+  getQuestion: () => new Promise((resolve, reject) => resolve(undefined)),
 };
 
 export const gameContext = createContext<IGameContext>(defaultValue);
@@ -36,16 +42,18 @@ interface IContextProviderProps {
   children?: React.ReactNode;
 }
 
+const saveQuiz = (code: string, game: IGame) => {
+  sessionStorage.setItem(code, JSON.stringify(game));
+};
+
 export function GameContextProvider({ children }: IContextProviderProps) {
   const [game, setGame] = useState<IGame>();
   const [gameStarted, setGameStarted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [error, setError] = useState(false);
-  const [code, setCode] = useState<string>('');
+  const [questionNumber, setQuestionNumber] = useState(0);
 
-  const saveQuiz = () => {
-    sessionStorage.setItem(code, JSON.stringify(game));
-  };
+  let code: string = '';
 
   const loadQuiz = async (): Promise<boolean> => {
     const quizString = sessionStorage.getItem(code);
@@ -56,14 +64,15 @@ export function GameContextProvider({ children }: IContextProviderProps) {
     } else {
       const url = `/quiz/${code}`;
       try {
-        const response = await fetchApi<IQuizQuestions>(url);
+        const response: IQuizQuestions = await fetchApi<IQuizQuestions>(url);
 
-        setGame({
+        const g = {
           quiz: response,
           data: [],
-        });
+        };
 
-        saveQuiz();
+        setGame(g);
+        saveQuiz(code, g);
         return true;
       } catch (e) {
         setError(true);
@@ -74,21 +83,75 @@ export function GameContextProvider({ children }: IContextProviderProps) {
     return false;
   };
 
-  const startGame = async (code: string): Promise<boolean> => {
-    setCode(code);
-    setGameStarted(true);
-    return await loadQuiz();
+  const startGame = async (gameCode: string): Promise<boolean> => {
+    code = gameCode;
+    const loaded = await loadQuiz();
+    setGameStarted(loaded);
+    setQuestionNumber(0);
+    return loaded;
   };
 
   const endGame = () => {
     setGameStarted(false);
-    setCode('');
+    setError(false);
+    setErrorMessage('');
+    setGame(undefined);
+    code = '';
     sessionStorage.removeItem(code);
+  };
+
+  const getQuestion = async (): Promise<IQuestion | undefined> => {
+    if (hasNextQuestion()) {
+      return undefined;
+    }
+
+    const url = `/quiz/question/${game?.quiz.questions[questionNumber]}`;
+    try {
+      return await fetchApi<IQuestion>(url);
+    } catch (e) {
+      setError(true);
+      setErrorMessage(e.message);
+      return undefined;
+    }
+  };
+
+  const hasNextQuestion = (): boolean => {
+    if (!game || questionNumber >= game.quiz.questions.length) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const answerTheQuestion = (id: number, answers: number[]) => {
+    if (game) {
+      const newGame: IGame = {
+        quiz: game.quiz,
+        data: [
+          ...game.data.filter((x) => x.question !== id),
+          { question: id, answers },
+        ],
+      };
+
+      setGame(newGame);
+      saveQuiz(code, newGame);
+      setQuestionNumber(questionNumber + 1);
+    }
   };
 
   return (
     <Provider
-      value={{ game, gameStarted, startGame, endGame, error, errorMessage }}
+      value={{
+        game,
+        gameStarted,
+        startGame,
+        endGame,
+        error,
+        errorMessage,
+        getQuestion,
+        hasNextQuestion,
+        answerTheQuestion,
+      }}
     >
       {children}
     </Provider>
