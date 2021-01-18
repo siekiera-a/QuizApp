@@ -10,12 +10,12 @@ import {
 interface IGame {
   quiz: IQuizQuestions;
   data: IAnswerData[];
+  state: State;
 }
 
 export enum State {
   NotStarted,
   InProgress,
-  Submitted,
 }
 
 interface IGameContext {
@@ -60,20 +60,22 @@ const saveQuiz = (code: string, game: IGame) => {
 };
 
 let questionNumber = 0;
+let code: string = '';
 
 export function GameContextProvider({ children }: IContextProviderProps) {
   const [game, setGame] = useState<IGame>();
-  const [gameState, setGameState] = useState(State.NotStarted);
   const [errorMessage, setErrorMessage] = useState('');
   const [error, setError] = useState(false);
-
-  let code: string = '';
 
   const loadQuiz = async (): Promise<boolean> => {
     const quizString = sessionStorage.getItem(code);
 
     if (quizString) {
-      setGame(JSON.parse(quizString) as IGame);
+      const g = JSON.parse(quizString) as IGame;
+      g.data = [];
+      g.state = State.InProgress;
+      setGame(g);
+      saveQuiz(code, g);
       return true;
     } else {
       const url = `/quiz/${code}`;
@@ -83,6 +85,7 @@ export function GameContextProvider({ children }: IContextProviderProps) {
         const g = {
           quiz: response,
           data: [],
+          state: State.InProgress,
         };
 
         setGame(g);
@@ -100,18 +103,16 @@ export function GameContextProvider({ children }: IContextProviderProps) {
   const startGame = async (gameCode: string): Promise<boolean> => {
     code = gameCode;
     const loaded = await loadQuiz();
-    setGameState(State.InProgress);
     questionNumber = 0;
     return loaded;
   };
 
   const endGame = () => {
-    setGameState(State.NotStarted);
     setError(false);
     setErrorMessage('');
     setGame(undefined);
-    code = '';
     sessionStorage.removeItem(code);
+    code = '';
   };
 
   const getQuestion = async (): Promise<IQuestion | undefined> => {
@@ -145,6 +146,7 @@ export function GameContextProvider({ children }: IContextProviderProps) {
           ...game.data.filter((x) => x.question !== id),
           { question: id, answers },
         ],
+        state: game.state,
       };
 
       setGame(newGame);
@@ -158,13 +160,12 @@ export function GameContextProvider({ children }: IContextProviderProps) {
   ): Promise<ISubmitResponse | undefined> => {
     if (game && user.length > 0) {
       const url = `/submit/${game.quiz.id}`;
-      const data: IAnswerRequest = {
+      const requestData: IAnswerRequest = {
         user,
         data: game.data,
       };
       try {
-        const response = await fetchPostApi<ISubmitResponse>(url, data);
-        setGameState(State.Submitted);
+        const response = await fetchPostApi<ISubmitResponse>(url, requestData);
         return response;
       } catch (e) {
         setError(true);
@@ -183,7 +184,7 @@ export function GameContextProvider({ children }: IContextProviderProps) {
     <Provider
       value={{
         game,
-        gameState,
+        gameState: game?.state || State.NotStarted,
         startGame,
         endGame,
         error,

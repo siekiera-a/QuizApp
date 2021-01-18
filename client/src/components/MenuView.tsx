@@ -16,7 +16,7 @@ const MenuView = () => {
         </>
       )}
 
-      {[State.InProgress, State.Submitted].includes(gameState) && <Game />}
+      {gameState === State.InProgress && <Game />}
     </div>
   );
 };

@@ -45,7 +45,6 @@ const Submit = () => {
         input.current.value = '';
         setLoading(true);
         submitAnswers(username).then((result) => {
-          console.log(result);
           if (result) {
             setScore(result);
           }
