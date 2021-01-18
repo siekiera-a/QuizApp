@@ -1,36 +1,33 @@
 import {
+  Button,
   Card,
   CardContent,
   Container,
   makeStyles,
-  Theme,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
-import { StaticContext } from 'react-router';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { gameContext } from '../GameContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({
   margin: {
     marginTop: '16px',
   },
-  link: {
-    color: theme.palette.text.primary,
+  wrapper: {
+    textAlign: 'center',
+    marginTop: '20px',
   },
-}));
+});
 
 interface IProp {
   message: string;
-  link?: string;
 }
 
-const ErrorPage = ({
-  location: { state },
-}: RouteComponentProps<{}, StaticContext, IProp>) => {
+const ErrorPage = ({ message }: IProp) => {
   const classes = useStyles();
-
+  const { clearErrors } = useContext(gameContext);
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" className={'box'}>
       <Card>
         <Typography
           align="center"
@@ -41,17 +38,14 @@ const ErrorPage = ({
           Some error occured!
         </Typography>
         <CardContent>
-          <Typography>
-            {state.message}{' '}
-            {state.link && (
-              <>
-                Go to{' '}
-                <Link to={state.link} className={classes.link}>
-                  quiz.
-                </Link>
-              </>
-            )}
+          <Typography variant="h6" paragraph={true}>
+            {message}
           </Typography>
+          <div className={classes.wrapper}>
+            <Button variant="contained" color="primary" onClick={clearErrors}>
+              OK
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </Container>

@@ -19,7 +19,7 @@ import { IGetQuiz } from '../ResponseApiModels';
 import QuizRow from './QuizRow';
 
 const useStyles = makeStyles({
-  center: {
+  wrapper: {
     textAlign: 'center',
   },
   margin: {
@@ -61,7 +61,7 @@ const QuizList = () => {
         </Typography>
 
         {!quizzes ? (
-          <div className={classes.center}>
+          <div className={classes.wrapper}>
             <CircularProgress />
           </div>
         ) : (

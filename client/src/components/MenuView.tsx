@@ -4,6 +4,7 @@ import Game from './Game';
 import QuizList from './QuizList';
 import CodePanel from './CodePanel';
 import Leaderboard from './Leaderboard';
+import ErrorPage from './ErrorPage';
 
 interface ILeaderboard {
   show: boolean;
@@ -11,7 +12,7 @@ interface ILeaderboard {
 }
 
 const MenuView = () => {
-  const { gameState } = useContext(gameContext);
+  const { gameState, error, errorMessage } = useContext(gameContext);
   const [leaderboard, setLeaderboard] = useState<ILeaderboard>({
     show: false,
     code: '',
@@ -24,6 +25,10 @@ const MenuView = () => {
   const closeLeaderboard = () => {
     setLeaderboard({ show: false, code: '' });
   };
+
+  if (error) {
+    return <ErrorPage message={errorMessage} />;
+  }
 
   return (
     <div className={'box'}>
