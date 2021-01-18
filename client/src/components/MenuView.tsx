@@ -1,23 +1,23 @@
 import { useContext } from 'react';
-import { gameContext } from '../GameContext';
+import { gameContext, State } from '../GameContext';
 import Game from './Game';
 import QuizList from './QuizList';
 import StartQuiz from './StartQuiz';
 
 const MenuView = () => {
-  const { gameStarted } = useContext(gameContext);
+  const { gameState } = useContext(gameContext);
 
   return (
-    <>
-      {!gameStarted && (
+    <div className={'box'}>
+      {gameState === State.NotStarted && (
         <>
           <QuizList />
           <StartQuiz />
         </>
       )}
 
-      {gameStarted && <Game />}
-    </>
+      {[State.InProgress, State.Submitted].includes(gameState) && <Game />}
+    </div>
   );
 };
 

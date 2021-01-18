@@ -30,7 +30,7 @@ const ErrorPage = ({
   const classes = useStyles();
 
   return (
-    <Container maxWidth="md" className={'box'}>
+    <Container maxWidth="md">
       <Card>
         <Typography
           align="center"

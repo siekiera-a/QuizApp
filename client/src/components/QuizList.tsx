@@ -49,7 +49,7 @@ const QuizList = () => {
   }, [page]);
 
   return (
-    <Container maxWidth="md" className={'box'}>
+    <Container maxWidth="md">
       <Card>
         <Typography
           align="center"

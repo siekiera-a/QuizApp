@@ -90,7 +90,7 @@ const Question = ({ id, text, answers, onSubmit }: IQuestion & IProp) => {
   };
 
   return (
-    <Container maxWidth="md" className={'box'}>
+    <Container maxWidth="md">
       <Card>
         <CardContent>
           <Typography variant="h5" align="center">

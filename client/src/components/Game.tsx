@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { gameContext } from '../GameContext';
 import { IQuestion } from '../ResponseApiModels';
 import Question from './Question';
+import Submit from './Submit';
 
 const useStyles = makeStyles({
   center: {
@@ -15,6 +16,7 @@ const Game = () => {
   const [loading, setLoading] = useState<boolean>();
   const [question, setQuestion] = useState<IQuestion>();
   const [nextQuestion, setNextQuestion] = useState<boolean>();
+  const [submitted, setSubmitted] = useState(false);
 
   const { hasNextQuestion, answerTheQuestion, getQuestion } = useContext(
     gameContext
@@ -35,14 +37,16 @@ const Game = () => {
     if (hasNextQuestion()) {
       setNextQuestion(true);
     } else {
-      // submit
+      setSubmitted(true);
     }
   };
 
-  console.log(loading);
+  if (submitted) {
+    return <Submit />;
+  }
 
   return loading ? (
-    <div className={classes.center + ' box'}>
+    <div className={classes.center}>
       <CircularProgress />
     </div>
   ) : (
