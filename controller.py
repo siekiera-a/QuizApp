@@ -165,18 +165,16 @@ def submit_answers(quiz_id):
     return jsonify(response)
 
 
-@controller.route('/leaderboard/<quiz_id>')
-def get_leaderboard(quiz_id):
-    path_param = quiz_id
-    quiz_id = parse_id(quiz_id)
+@controller.route('/leaderboard/<code>')
+def get_leaderboard(code):
+    code = str(code).strip()
+    if len(code) == 0:
+        return response_message({'message': f'Code can not be empty!'}, 400)
 
-    if quiz_id is None:
-        return response_message({'message': f'Invalid quiz id ({path_param})!'}, 400)
-
-    quiz = Quiz.query.filter_by(id=quiz_id).first()
+    quiz = Quiz.query.filter_by(code=code).first()
 
     if quiz is None:
-        return response_message({'message': f'Not found quiz with id {quiz_id}!'}, 404)
+        return response_message({'message': f'Quiz with code {code} not found!'}, 404)
 
     # limit must be greater or equal 1
     default_limit = 10
