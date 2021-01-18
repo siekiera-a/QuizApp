@@ -54,7 +54,7 @@ export interface ILeaderboard {
   code: string,
   description: string,
   creationTime: string,
-  score: IScore[]
+  scores: IScore[]
 }
 
 export interface IError {

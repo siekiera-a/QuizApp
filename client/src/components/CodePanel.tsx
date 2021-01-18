@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     marginTop: '35px',
   },
-  button: {
+  gap: {
     marginLeft: '20px',
   },
   loader: {
@@ -26,24 +26,42 @@ const useStyles = makeStyles({
   },
 });
 
-const StartQuiz = () => {
+const CodePanel = ({
+  showLeaderboard,
+}: {
+  showLeaderboard(code: string): void;
+}) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const { startGame } = useContext(gameContext);
 
-  const handleClick = () => {
-    if (input.current !== null) {
-      const code = input.current.value;
+  const getCode = (): string => {
+    if (input.current) {
+      const code = input.current.value.trim();
       input.current.value = '';
+      return code;
+    }
+    return '';
+  };
+
+  const joinButton = () => {
+    const code = getCode();
+    if (code.length > 0)
       startGame(code).then((success) => {
         if (!success) {
           setOpen(true);
         }
         setLoading(false);
       });
-      setLoading(true);
+    setLoading(true);
+  };
+
+  const selectLeaderboard = () => {
+    const code = getCode();
+    if (code.length > 0) {
+      showLeaderboard(code);
     }
   };
 
@@ -69,10 +87,19 @@ const StartQuiz = () => {
           variant="contained"
           size="large"
           color="primary"
-          className={classes.button}
-          onClick={handleClick}
+          className={classes.gap}
+          onClick={joinButton}
         >
           Join
+        </Button>
+        <Button
+          variant="contained"
+          size="large"
+          color="primary"
+          className={classes.gap}
+          onClick={selectLeaderboard}
+        >
+          Show Leaderboard
         </Button>
       </div>
       {loading && (
@@ -90,4 +117,4 @@ const StartQuiz = () => {
   );
 };
 
-export default StartQuiz;
+export default CodePanel;
