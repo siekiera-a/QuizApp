@@ -54,16 +54,16 @@ const QuizList = () => {
         <Typography
           align="center"
           variant="h4"
-          paragraph={true}
+          paragraph
           className={classes.margin}
         >
           Join to game
         </Typography>
 
         {!quizzes ? (
-          <div className={classes.wrapper}>
-            <CircularProgress />
-          </div>
+          <Typography align="center" variant="h6" paragraph>
+            No Quizzes found!
+          </Typography>
         ) : (
           <>
             <TableContainer>

@@ -25,10 +25,16 @@ const Game = () => {
   useEffect(() => {
     if (hasNextQuestion()) {
       setLoading(true);
-      getQuestion().then((q) => {
-        setQuestion(q);
-        setLoading(false);
-      });
+      getQuestion()
+        .then((q) => {
+          setQuestion(q);
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }, [nextQuestion]);
 

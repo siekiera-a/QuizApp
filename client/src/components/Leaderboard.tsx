@@ -43,7 +43,6 @@ const Leaderboard = ({ code, closeLeaderboard }: IProps) => {
 
     try {
       const response = fetchApi<ILeaderboard>(url);
-      console.log(response);
       response.then((x) => setLeaderboard(x)).catch((e) => closeLeaderboard());
     } catch (e) {
       closeLeaderboard();
@@ -66,7 +65,7 @@ const Leaderboard = ({ code, closeLeaderboard }: IProps) => {
             align="center"
             color="secondary"
           >
-            Quiz {leaderboard.code} created by {leaderboard.author} created at:
+            Quiz {leaderboard.code} created by {leaderboard.author} at:
             {format.format(new Date(leaderboard.creationTime))}
           </Typography>
 
@@ -88,8 +87,8 @@ const Leaderboard = ({ code, closeLeaderboard }: IProps) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {leaderboard.scores.map((s) => (
-                  <TableRow>
+                {leaderboard.scores.map((s, index) => (
+                  <TableRow key={index}>
                     <TableCell>{s.user}</TableCell>
                     <TableCell>{Math.round(s.score * 100)}%</TableCell>
                     <TableCell>{format.format(new Date(s.datetime))}</TableCell>
