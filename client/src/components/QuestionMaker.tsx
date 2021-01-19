@@ -87,8 +87,8 @@ const QuestionMaker = ({
     });
   };
 
-  const handleCreateQuizButton = () => {
-    if (question.question.length > 0) {
+  const handleCreateQuestionButton = () => {
+    if (question.question.length >= 3) {
       onQuestionCreated(question);
       setQuestion(defaultValue);
       if (questionInput.current) {
@@ -129,8 +129,8 @@ const QuestionMaker = ({
       {question.answers.length > 0 && (
         <>
           <List>
-            {question.answers.map((a) => (
-              <ListItem>
+            {question.answers.map((a, index) => (
+              <ListItem key={index}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
@@ -156,7 +156,7 @@ const QuestionMaker = ({
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleCreateQuizButton}
+                  onClick={handleCreateQuestionButton}
                 >
                   Create Question
                 </Button>
