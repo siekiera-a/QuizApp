@@ -1,10 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from os import getenv
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='client/build')
+
+CORS(app, resources=[r"/api/*", {"origins": "*"}])
+
+db_user = getenv('POSTGRES_USER')
+db_password = getenv('POSTGRES_PASSWORD')
+db_name = getenv('POSTGRES_DB')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://arek:pjf2137#@localhost:5432/quiz_app'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@localhost:5432/{db_name}'
 
 db = SQLAlchemy(app)
 
