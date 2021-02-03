@@ -1,0 +1,7 @@
+flask
+flask-expects-json
+flask-script
+flask-migrate
+Flask-SQLAlchemy
+flask-cors
+psycopg2-binary

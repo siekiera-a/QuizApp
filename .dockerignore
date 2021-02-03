@@ -1,0 +1,5 @@
+client
+.gitignore
+Dockerfile
+docker-compose.yml
+package-lock.json
